@@ -1,17 +1,49 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Register from "./components/Register";
+import Login from "./components/Login";
+
+const customTheme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        bg: "teal.800",
+        color: "teal.50",
+      },
+      a: {
+        color: "teal.300",
+        _hover: { color: "teal.100", textDecoration: "underline" },
+      },
+    },
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+    <BrowserRouter>
+    <ChakraProvider theme={customTheme} colorScheme="teal">
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+      <Switch>
+        <Route exact path="/"><App /></Route>
+        <Route exact path="/register"><Register /></Route>
+        <Route exact path="/login"><Login /></Route>
+        
+        
+      </Switch>
+
+    </ChakraProvider>
+
+    
+
+    </BrowserRouter>
+
+   
+
+  </React.StrictMode>,
+
+  document.getElementById("root")
+);

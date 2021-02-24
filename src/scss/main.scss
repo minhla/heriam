@@ -1,0 +1,9 @@
+body {
+  text-align: center;
+}
+
+// Flip webcam stream
+video {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
