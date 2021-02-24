@@ -2,6 +2,7 @@ import Webcam from "./components/Webcam";
 import { Heading, Flex, Spacer, Container, Button, ButtonGroup, Link } from "@chakra-ui/react";
 import { Route, Link as RouterLink, Switch } from "react-router-dom";
 import Login from "./components/Login";
+import { React } from 'react';
 
 function App() {
   return (

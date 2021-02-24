@@ -6,14 +6,19 @@ export default class Webcam extends Component {
   constructor() {
     super();
     this.videoRef = React.createRef();
+    this.webcamStream = null;
   }
 
   componentDidMount() {
     const video = this.videoRef.current;
-    const constraints = { video: true };
-    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      this.webcamStream = stream;
       video.srcObject = stream;
     });
+  }
+
+  componentWillUnmount() {
+    this.webcamStream.getTracks().forEach(track => track.stop());
   }
 
   render() {
@@ -21,11 +26,11 @@ export default class Webcam extends Component {
       <Flex justify="center">
         <Box
           as="video"
-          as="video"
           autoPlay={true}
           ref={this.videoRef}
           w={["100%", "450px", "500px"]}
           padding={["15px"]}
+          className="webcam"
         />
       </Flex>
     );
