@@ -18,7 +18,9 @@ export default class Webcam extends Component {
   }
 
   componentWillUnmount() {
-    this.webcamStream.getTracks().forEach(track => track.stop());
+    if (this.webcamStream != null) {
+      this.webcamStream.getTracks().forEach(track => track.stop());
+    }
   }
 
   render() {

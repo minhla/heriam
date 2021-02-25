@@ -25,24 +25,14 @@ const customTheme = extendTheme({
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-    <ChakraProvider theme={customTheme} colorScheme="teal">
-
-      <Switch>
-        <Route exact path="/"><App /></Route>
-        <Route exact path="/register"><Register /></Route>
-        <Route exact path="/login"><Login /></Route>
-        
-        
-      </Switch>
-
-    </ChakraProvider>
-
-    
-
+      <ChakraProvider theme={customTheme} colorScheme="teal">
+        <Switch>
+          <Route exact path="/"><App /></Route>
+          <Route path="/register"><Register /></Route>
+          <Route path="/login"><Login /></Route> 
+        </Switch>
+      </ChakraProvider>
     </BrowserRouter>
-
-   
-
   </React.StrictMode>,
 
   document.getElementById("root")
