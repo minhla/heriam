@@ -58,7 +58,7 @@ const Register = () => {
           <Input focusBorderColor="teal.100" id="password" type="password" placeholder="Think of a very secure one"></Input>
 
         </FormControl>
-        <Button mt="15px" type="submit" colorScheme="teal">Register</Button>
+        <Button mt="15px" type="submit" colorScheme="teal" bg="white" color="teal.500"_hover={{color:"white",bg:"teal.500"}}>Register</Button>
         </form>
        
       </Container>

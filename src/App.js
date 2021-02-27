@@ -1,12 +1,26 @@
-import Webcam from "./components/Webcam";
+import React, { Component, useEffect, useState } from 'react';
 import { Heading, Flex, Spacer, Container, Button, ButtonGroup, Link } from "@chakra-ui/react";
-import { Route, Link as RouterLink, Switch } from "react-router-dom";
-import Login from "./components/Login";
-import { React } from 'react';
+import { Link as RouterLink, Redirect } from "react-router-dom";
 
-function App() {
-  return (
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { redirect: null, userToken: null }
+  }
 
+  componentDidMount() {
+    const userToken = localStorage.getItem('heriam.userToken')
+    if (userToken) {
+      console.log(userToken)
+      this.setState({redirect: '/dashboard', userToken: userToken})
+    }
+  }
+
+  render() {
+    if (this.state.redirect) {
+      return <Redirect to={{pathname: this.state.redirect, state: { userToken: this.state.userToken }} } />
+    }
+    return (
       <Flex h="100vh" w="100%" justifyContent="center" direction="column" align="center">
         
         <Container>
@@ -18,7 +32,6 @@ function App() {
           <Link as={RouterLink} to="/register"><Button colorScheme="teal" bg="white" color="teal.500"_hover={{color:"white",bg:"teal.500"}} m="5px">Register</Button></Link>
         </ButtonGroup>
       </Flex>
-  );
+    );
+  }
 }
-
-export default App;
