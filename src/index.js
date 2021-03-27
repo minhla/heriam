@@ -7,6 +7,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
+import Checkin from "./components/Checkin";
 import { LOCAL_STORAGE_KEY } from "./constants/constants";
 
 const customTheme = extendTheme({
@@ -33,6 +34,7 @@ ReactDOM.render(
           <Route path="/register"><Register /></Route>
           <Route path="/login"><Login /></Route> 
           <Route path="/dashboard"><Dashboard /></Route>
+          <Route path="/:id"><Checkin/></Route>
           <Route path="*" component={() => <Heading>404 NOT FOUND</Heading>}></Route>
         </Switch>
       </ChakraProvider>
