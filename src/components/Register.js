@@ -7,6 +7,7 @@ import { LOCAL_STORAGE_KEY } from '../constants/constants';
 const Register = () => {
 
   const [isError, setError] = useState(false)
+  const [successMsg, setMsg] = useState('')
   
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -29,12 +30,14 @@ const Register = () => {
       password: `${hash}`
     }
 
-    if (currentUsers) {
+    if (currentUsers) { //If this is not the first user EVER.
       const newCurrentUsers = [...currentUsers, newUser]
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newCurrentUsers))
+      setMsg(`Account created successfully.`)
     }
     else {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([newUser]))
+      setMsg(`Account created successfully.`)
     }
     
     
@@ -56,6 +59,7 @@ const Register = () => {
           <FormErrorMessage>This username already exists. Please use another one.</FormErrorMessage>
           <FormLabel mt="10px">Password</FormLabel>
           <Input focusBorderColor="teal.100" id="password" type="password" placeholder="Think of a very secure one"></Input>
+          {!isError && <div> {successMsg} </div> }
 
         </FormControl>
         <Button mt="15px" type="submit" colorScheme="teal" bg="white" color="teal.500"_hover={{color:"white",bg:"teal.500"}}>Register</Button>

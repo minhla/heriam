@@ -44,13 +44,13 @@ function Login() {
       <Container w={["100%","450px","500px"]}>
         <form onSubmit={handleSubmit}>
         <FormControl isRequired isInvalid={loginErr}>
-        <FormErrorMessage>The login information is incorrect. Please try again.</FormErrorMessage>
+        
           <FormLabel>Username</FormLabel>
           <Input focusBorderColor="teal.100" id="username" type="text" pattern="^[a-zA-Z0-9_.-]*$"></Input>
 
           <FormLabel mt="10px">Password</FormLabel>
           <Input focusBorderColor="teal.100" id="password" type="password"></Input>
-
+          <FormErrorMessage>The login information is incorrect. Please try again.</FormErrorMessage>
         </FormControl>
         <Button mt="15px" type="submit" colorScheme="teal" bg="white" color="teal.500"_hover={{color:"white",bg:"teal.500"}}>Login</Button>
         </form>
