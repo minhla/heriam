@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Flex, Heading, Spacer, Link, Button } from '@chakra-ui/react'
-import { EVENTS } from '../constants/constants'
+import { EVENTS, USER_DESCRIPTORS } from '../constants/constants'
 import EventList from './EventList'
 import { useLocation, useHistory, Link as RouterLink } from 'react-router-dom'
 
@@ -25,7 +25,7 @@ function Dashboard() {
     <Flex direction="column">
       <Link as={RouterLink} to="/"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}} onClick={handleLogout}>Logout</Button></Link>
       <Heading>Dashboard</Heading>
-      <EventList events={userEvents} />
+      <EventList events={userEvents}/>
     </Flex>
   )
 }
