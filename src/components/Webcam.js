@@ -8,99 +8,110 @@ export default class Webcam extends Component {
     super(props);
     this.videoRef = React.createRef();
     this.webcamStream = null;
-    this.user = USER_DESCRIPTORS.filter(element => element.username == this.props.username)
+    this.user = USER_DESCRIPTORS.filter(
+      (element) => element.username == this.props.username
+    );
   }
+
+  timeout = 0;
 
   componentDidMount() {
     const video = this.videoRef.current;
     let optionsSSDMobileNet;
-    const userDescriptor = this.user[0].descriptor
-    console.log(userDescriptor)
-    let descriptorArray = []
+    const userDescriptor = this.user[0].descriptor;
+    console.log(userDescriptor);
+    let descriptorArray = [];
     //Array manipulation to get the values only
-    for (var e in userDescriptor){
-      descriptorArray.push(userDescriptor[e])
+    for (var e in userDescriptor) {
+      descriptorArray.push(userDescriptor[e]);
     }
 
-    console.log(descriptorArray)
+    console.log(descriptorArray);
 
-    const descriptorArrayFloat32 = new Float32Array(descriptorArray)
+    const descriptorArrayFloat32 = new Float32Array(descriptorArray);
 
     const startWebcam = () => {
       navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
         this.webcamStream = stream;
         video.srcObject = stream;
       });
-    }
+    };
 
     const setupFaceApi = async () => {
-
-      console.log('Setting up Face API...')
+      console.log("Setting up Face API...");
 
       //default is webgl backend
-      await faceapi.tf.setBackend('webgl');
-  
+      await faceapi.tf.setBackend("webgl");
+
       await faceapi.tf.enableProdMode();
-      await faceapi.tf.ENV.set('DEBUG', false);
+      await faceapi.tf.ENV.set("DEBUG", false);
       await faceapi.tf.ready();
-  
+
       await faceapi.nets.ssdMobilenetv1.loadFromUri(modelPath);
       await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
       await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
-  
+
       optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
         minConfidence: minScore,
         maxResults,
       });
-    }
+    };
 
     const faceapi = require("@vladmandic/face-api");
-    const modelPath = '../weights/';
+    const modelPath = "../weights/";
     const minScore = 0.1;
     const maxResults = 5;
-    
-    Promise.all([
-      setupFaceApi()
-    ]).then(startWebcam)
+
+    Promise.all([setupFaceApi()]).then(startWebcam);
 
     const labeledDescriptors = [
-      new faceapi.LabeledFaceDescriptors(`${this.user.username}`, [descriptorArrayFloat32])
-    ]
-    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors)
+      new faceapi.LabeledFaceDescriptors(`${this.user.username}`, [
+        descriptorArrayFloat32,
+      ]),
+    ];
+    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
 
-    const videoClass = document.getElementById('webcam')
+    const videoClass = document.getElementById("webcam");
 
     // Canvas draw function
-    videoClass.addEventListener('play', () => {
-      const canvas = faceapi.createCanvasFromMedia(videoClass)
-      const displaySize = {width: 640, height: 480}
-      document.body.append(canvas)
-      faceapi.matchDimensions(canvas, displaySize)
-      setInterval(async () => {
-        const detections = await faceapi.detectSingleFace(videoClass, optionsSSDMobileNet).withFaceLandmarks().withFaceDescriptor()
+    videoClass.addEventListener("play", () => {
+      const canvas = faceapi.createCanvasFromMedia(videoClass);
+      const displaySize = { width: 640, height: 480 };
+      document.body.append(canvas);
+      faceapi.matchDimensions(canvas, displaySize);
+      this.timeout = setInterval(async () => {
+        const detections = await faceapi
+          .detectSingleFace(videoClass, optionsSSDMobileNet)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
         if (detections) {
-          const tempFaceDescriptor = detections.descriptor
-          const recognitionResult = faceMatcher.findBestMatch(tempFaceDescriptor)
-          console.log(parseFloat(recognitionResult._distance) > 0.5 ? 'Authenticated' : 'Denied')
-          const resizedDetections = faceapi.resizeResults(detections, displaySize)
-          canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-          faceapi.draw.drawDetections(canvas, resizedDetections)
+          const tempFaceDescriptor = detections.descriptor;
+          const recognitionResult = faceMatcher.findBestMatch(
+            tempFaceDescriptor
+          );
+          console.log(
+            parseFloat(recognitionResult._distance) > 0.6
+              ? "Authenticated"
+              : "Denied"
+          );
+          const resizedDetections = faceapi.resizeResults(
+            detections,
+            displaySize
+          );
+          canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+          faceapi.draw.drawDetections(canvas, resizedDetections);
         }
-      }, 5000)
-    })
-
-    
-
-    
-    
-
+      }, 2000);
+    });
   }
 
   componentWillUnmount() {
+
+    //Stops camera stream when component unmounts
     if (this.webcamStream != null) {
-      this.webcamStream.getTracks().forEach(track => track.stop());
+      this.webcamStream.getTracks().forEach((track) => track.stop());
     }
-    
+    clearInterval(this.timeout);
   }
 
   render() {
