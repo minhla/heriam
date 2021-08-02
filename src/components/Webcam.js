@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "../scss/main.scss";
-import { Flex, Box, Spacer } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 import { USER_DESCRIPTORS } from "../constants/constants";
 
 export default class Webcam extends Component {
@@ -19,14 +19,13 @@ export default class Webcam extends Component {
     const video = this.videoRef.current;
     let optionsSSDMobileNet;
     const userDescriptor = this.user[0].descriptor;
-    console.log(userDescriptor);
+    // console.log(userDescriptor);
     let descriptorArray = [];
     //Array manipulation to get the values only
     for (var e in userDescriptor) {
       descriptorArray.push(userDescriptor[e]);
     }
-
-    console.log(descriptorArray);
+    // console.log(descriptorArray);
 
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
 
@@ -51,10 +50,13 @@ export default class Webcam extends Component {
       await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
       await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
 
+      console.log(faceapi.nets)
+
       optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
         minConfidence: minScore,
         maxResults,
       });
+
     };
 
     const faceapi = require("@vladmandic/face-api");
@@ -69,6 +71,8 @@ export default class Webcam extends Component {
         descriptorArrayFloat32,
       ]),
     ];
+
+    console.log('User descriptors stored in database => ', labeledDescriptors[0])
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
 
     const videoClass = document.getElementById("webcam");
@@ -86,6 +90,7 @@ export default class Webcam extends Component {
           .withFaceDescriptor();
         if (detections) {
           const tempFaceDescriptor = detections.descriptor;
+          console.log('Scanned face descriptor => ', tempFaceDescriptor)
           const recognitionResult = faceMatcher.findBestMatch(
             tempFaceDescriptor
           );
