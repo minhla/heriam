@@ -9,7 +9,7 @@ export default class Webcam extends Component {
     this.videoRef = React.createRef();
     this.webcamStream = null;
     this.user = USER_DESCRIPTORS.filter(
-      (element) => element.username == this.props.username
+      (element) => element.username === this.props.username
     );
   }
 
