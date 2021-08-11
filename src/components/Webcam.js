@@ -19,14 +19,13 @@ export default class Webcam extends Component {
     const video = this.videoRef.current;
     let optionsSSDMobileNet;
     const userDescriptor = this.user[0].descriptor;
-    // console.log(userDescriptor);
+
     let descriptorArray = [];
     //Array manipulation to get the values only
     for (var e in userDescriptor) {
       descriptorArray.push(userDescriptor[e]);
     }
-    // console.log(descriptorArray);
-
+    //User reference 
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
 
     const startWebcam = () => {
@@ -50,17 +49,16 @@ export default class Webcam extends Component {
       await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
       await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
 
-      console.log(faceapi.nets)
+      console.log(faceapi.nets);
 
       optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
         minConfidence: minScore,
         maxResults,
       });
-
     };
 
     const faceapi = require("@vladmandic/face-api");
-    const modelPath = "../weights/";
+    const modelPath = "./weights/";
     const minScore = 0.1;
     const maxResults = 5;
 
@@ -72,7 +70,10 @@ export default class Webcam extends Component {
       ]),
     ];
 
-    console.log('User descriptors stored in database => ', labeledDescriptors[0])
+    console.log(
+      "User descriptors stored in database => ",
+      labeledDescriptors[0]
+    );
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
 
     const videoClass = document.getElementById("webcam");
@@ -90,15 +91,15 @@ export default class Webcam extends Component {
           .withFaceDescriptor();
         if (detections) {
           const tempFaceDescriptor = detections.descriptor;
-          console.log('Scanned face descriptor => ', tempFaceDescriptor)
-          const recognitionResult = faceMatcher.findBestMatch(
-            tempFaceDescriptor
-          );
+          console.log("Scanned face descriptor => ", tempFaceDescriptor);
+          const recognitionResult =
+            faceMatcher.findBestMatch(tempFaceDescriptor);
           console.log(
             parseFloat(recognitionResult._distance) > 0.6
               ? "Authenticated"
               : "Denied"
           );
+          console.log("recognitionResult =>",recognitionResult)
           const resizedDetections = faceapi.resizeResults(
             detections,
             displaySize
@@ -111,7 +112,6 @@ export default class Webcam extends Component {
   }
 
   componentWillUnmount() {
-
     //Stops camera stream when component unmounts
     if (this.webcamStream != null) {
       this.webcamStream.getTracks().forEach((track) => track.stop());

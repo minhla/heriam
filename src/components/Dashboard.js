@@ -22,7 +22,7 @@ function Dashboard() {
   }
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" justify="center" textAlign="center">
       <Link as={RouterLink} to="/"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}} onClick={handleLogout}>Logout</Button></Link>
       <Heading>Dashboard</Heading>
       <EventList events={userEvents}/>

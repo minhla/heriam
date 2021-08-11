@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import Homepage from "./components/Homepage";
 import { ChakraProvider, extendTheme, Heading } from "@chakra-ui/react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Register from "./components/Register";
@@ -30,7 +29,7 @@ ReactDOM.render(
     <BrowserRouter>
       <ChakraProvider theme={customTheme} colorScheme="teal">
         <Switch>
-          <Route exact path="/"><App /></Route>
+          <Route exact path="/"><Homepage /></Route>
           <Route path="/register"><Register /></Route>
           <Route path="/login"><Login /></Route> 
           <Route path="/dashboard"><Dashboard /></Route>
