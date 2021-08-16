@@ -4,7 +4,6 @@ import {
   Flex,
   Link,
   Button,
-  ButtonGroup,
   Text,
   Heading,
   Container,
@@ -77,7 +76,8 @@ function Login() {
         </form>
 
         <Container color="black" mt="15px" p="0">
-          Forgot your password? <Link color="teal.500">Click here</Link>
+          
+          <Text>Forgot your password? <Link color="teal.500">Click here</Link></Text>
         </Container>
       </Container>
     </Flex>

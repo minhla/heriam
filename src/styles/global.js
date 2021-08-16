@@ -3,6 +3,8 @@ const globalStyles = {
     global: {
       body: {
         bg: "teal.900",
+        bgImage: "url(/images/Wallpaper.png)",
+        bgSize: "cover",
         color: "teal.50",
       },
       h1: {
