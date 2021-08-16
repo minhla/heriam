@@ -46,12 +46,12 @@ const Register = () => {
   return (
     <Flex direction="column" justify="center" align="center">
       <ButtonGroup mb="50px">
-      <Link as={RouterLink} to="/"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}}>Home</Button></Link>
-      <Link as={RouterLink} to="/login"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}}>Login</Button></Link>
+      <Button as={RouterLink} to="/" colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}}>Home</Button>
+      <Button as={RouterLink} to="/login" colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}}>Login</Button>
       </ButtonGroup>
       <Heading mb="25px">Register a new account</Heading>
 
-      <Container w={["100%","450px","500px"]}>
+      <Container variant="auth">
         <form onSubmit={handleSubmit}>
         <FormControl isRequired isInvalid={isError}>
           <FormLabel>Username</FormLabel>
@@ -62,13 +62,10 @@ const Register = () => {
           {!isError && <div> {successMsg} </div> }
 
         </FormControl>
-        <Button mt="15px" type="submit" colorScheme="teal" bg="white" color="teal.500"_hover={{color:"white",bg:"teal.500"}}>Register</Button>
+        <Button mt="15px" type="submit">Register</Button>
         </form>
        
       </Container>
-  
-        
-      {/* <Webcam /> */}
     </Flex>
   )
 }

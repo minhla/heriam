@@ -7,27 +7,16 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Checkin from "./components/Checkin";
-import { LOCAL_STORAGE_KEY } from "./constants/constants";
+import themeOverrides from "./styles/index"
 
-const customTheme = extendTheme({
-  styles: {
-    global: {
-      body: {
-        bg: "teal.800",
-        color: "teal.50",
-      },
-      a: {
-        color: "teal.300",
-        _hover: { color: "teal.100", textDecoration: "underline" },
-      },
-    },
-  },
-});
+console.log(themeOverrides)
+
+const customTheme = extendTheme(themeOverrides);
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ChakraProvider theme={customTheme} colorScheme="teal">
+      <ChakraProvider theme={customTheme}>
         <Switch>
           <Route exact path="/"><Homepage /></Route>
           <Route path="/register"><Register /></Route>

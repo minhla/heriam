@@ -1,26 +1,34 @@
 import React from "react";
-import { Flex, Heading, LinkOverlay, LinkBox } from "@chakra-ui/react";
+import { Heading, Box, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
-const Event = ({ eventData, userDescriptors }) => {
+const Event = ({ eventData }) => {
   const isAttended = eventData.isAttended;
   return (
-    <LinkBox
+    <Box
+      as={RouterLink}
+      to={`${eventData.id}`}
+      w={["90%", "30%"]}
       m="15px"
-      border="2px solid #dadada"
+      p="50px 15px 30px 15px"
+      border="2px solid"
+      borderColor="teal.700"
       borderRadius="6px"
-      padding="5px 10px"
-      width={["80%", "400px", "450px"]}
+      textAlign="center"
+      _hover={{
+        textDecoration: "none",
+        transition: " transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+        color: "white",
+        bg: "teal.600",
+      }}
     >
-      <LinkOverlay href={`${eventData.id}`}>
-        <Heading size="md">{eventData.name} </Heading>{" "}
-      </LinkOverlay>
-      Time: {eventData.time}
-      <br />
-      Status:{" "}
-      {eventData.isAttended
-        ? "You have checked in"
-        : "You have not checked in "}
-    </LinkBox>
+      <Heading variant="event">{eventData.name}</Heading>
+      <Text>Time: {eventData.time}</Text>
+      <Text>
+        Status:
+        {isAttended ? "You have checked in" : "You have not checked in "}
+      </Text>
+    </Box>
   );
 };
 

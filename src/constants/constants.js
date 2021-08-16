@@ -49,6 +49,14 @@ export const EVENTS = [
     time: "Fri Mar 16 22:30:00",
     isAttended: false,
   },
+  
+  {
+    id: "fa65695b-7204-48cf-8f42-1eecd21590ed",
+    username: "anhminh",
+    name: "Digital Systems Project: ViVA",
+    time: "Wed Aug 25 22:30:00",
+    isAttended: false,
+  },
 
 ];
 

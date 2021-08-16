@@ -1,10 +1,11 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { Component } from "react";
 import {
   Heading,
   Flex,
   Button,
   ButtonGroup,
-  Link,
+  Image,
+  Container,
 } from "@chakra-ui/react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 
@@ -36,50 +37,39 @@ export default class Homepage extends Component {
     return (
       <Flex
         h="100vh"
-        w="100%"
-        justify="center"
-        direction="column"
-        align="center"
+        justify={{ base: "center", md: "center" }}
+        direction={{ base: "column", md: "row" }}
+        align={{ base: "center", md: "center" }}
+        p={{ base: 0, md: 150 }}
       >
-        <Heading
-          as="h1"
-          fontSize={["50px", "60px", "80px"]}
-          bgGradient="linear(to-r, teal.50,teal.300)"
-          bgClip="text"
+        <Image
+          src="/images/online-learning.png"
+          w="600px"
+          display={{ base: "none", md: "flex" }}
+        ></Image>
+        <Flex
+          ml="15px"
+          direction="column"
+          justify="center"
+          align={{ base: "stretch", md: "stretch" }}
         >
-          Hyriam
-        </Heading>
+          <Heading as="h1" fontSize={{ base: 60, md: 100 }}>
+            Heriam
+          </Heading>
 
-        <Heading
-          as="h2"
-          fontSize={["25px", "30px", "35px"]}
-          fontWeight="semibold"
-          p="10px"
-        >
-          The honest check-in system
-        </Heading>
-        <ButtonGroup spacing="15px" m="10px">
-          <Link as={RouterLink} to="/login">
-            <Button
-              colorScheme="teal"
-              m="5px"
-              _hover={{ color: "teal.500", bg: "white" }}
-            >
+          <Heading as="h2" fontSize={{ base: 25, md: 35 }}>
+            The honest check-in system
+          </Heading>
+
+          <ButtonGroup spacing="15px" m="10px">
+            <Button as={RouterLink} to="/login">
               Log in
             </Button>
-          </Link>
-          <Link as={RouterLink} to="/register">
-            <Button
-              colorScheme="teal"
-              bg="white"
-              color="teal.500"
-              _hover={{ color: "white", bg: "teal.500" }}
-              m="5px"
-            >
+            <Button as={RouterLink} to="/register">
               Register
             </Button>
-          </Link>
-        </ButtonGroup>
+          </ButtonGroup>
+        </Flex>
       </Flex>
     );
   }

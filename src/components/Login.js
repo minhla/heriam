@@ -1,64 +1,87 @@
-import React, {useState} from 'react';
-import Webcam from './Webcam';
-import { Flex, Link, Button, ButtonGroup, Heading, Container, FormControl, FormLabel, Input, FormErrorMessage } from '@chakra-ui/react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { LOCAL_STORAGE_KEY } from '../constants/constants';
+import React, { useState } from "react";
+import Webcam from "./Webcam";
+import {
+  Flex,
+  Link,
+  Button,
+  ButtonGroup,
+  Text,
+  Heading,
+  Container,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
+} from "@chakra-ui/react";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { LOCAL_STORAGE_KEY } from "../constants/constants";
 
 function Login() {
-  const [loginErr,setLoginErr] = useState(false)
+  const [loginErr, setLoginErr] = useState(false);
 
-  const history = useHistory()
+  const history = useHistory();
 
   const handleSubmit = (event) => {
-    event.preventDefault()
-    const e = event.target
-    if (!e) return
+    event.preventDefault();
+    const e = event.target;
+    if (!e) return;
 
-    const bcrypt = require('bcryptjs')
-    const currentUsers = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
-    if (!currentUsers) return
+    const bcrypt = require("bcryptjs");
+    const currentUsers = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (!currentUsers) return;
 
-    const findUser = currentUsers.find(user => user.username == e[0].value)
+    const findUser = currentUsers.find((user) => user.username == e[0].value);
     if (findUser) {
       if (bcrypt.compareSync(e[1].value, findUser.password)) {
-        localStorage.setItem('heriam.userToken',findUser.username)
-        history.push('/dashboard', {userToken: findUser.username})
-
+        localStorage.setItem("heriam.userToken", findUser.username);
+        history.push("/dashboard", { userToken: findUser.username });
       } else {
-        return setLoginErr(true)
+        return setLoginErr(true);
       }
-
     } else {
-      return setLoginErr(true)
+      return setLoginErr(true);
     }
-  }
+  };
 
   return (
     <Flex direction="column" justify="center" align="center">
-      <ButtonGroup>
-      <Link as={RouterLink} to="/"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}}>Home</Button></Link>
-      <Link as={RouterLink} to="/register"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}}>Register</Button></Link>
-      </ButtonGroup>
-      <Heading>Login</Heading>
-      
-      <Container w={["100%","450px","500px"]}>
-        <form onSubmit={handleSubmit}>
-        <FormControl isRequired isInvalid={loginErr}>
-        
-          <FormLabel>Username</FormLabel>
-          <Input focusBorderColor="teal.100" id="username" type="text" pattern="^[a-zA-Z0-9_.-]*$"></Input>
+      <Heading as="h1" m="30px 0" fontSize="45px">Heriam</Heading>
 
-          <FormLabel mt="10px">Password</FormLabel>
-          <Input focusBorderColor="teal.100" id="password" type="password"></Input>
-          <FormErrorMessage>The login information is incorrect. Please try again.</FormErrorMessage>
-        </FormControl>
-        <Button mt="15px" type="submit" colorScheme="teal" bg="white" color="teal.500"_hover={{color:"white",bg:"teal.500"}}>Login</Button>
+      <Container variant="auth">
+        <Flex justify="center" direction="column" align="center">
+          <Heading as="h2" p="0">
+            Welcome back
+          </Heading>
+          <Text variant="auth" mb="20px">Enter your credentials to access your account</Text>
+        </Flex>
+
+        <form onSubmit={handleSubmit}>
+          <FormControl isRequired isInvalid={loginErr}>
+            <FormLabel>Username</FormLabel>
+            <Input
+              variant="auth"
+              id="username"
+              type="text"
+              pattern="^[a-zA-Z0-9_.-]*$"
+            ></Input>
+
+            <FormLabel mt="10px">Password</FormLabel>
+            <Input variant="auth" id="password" type="password"></Input>
+            <FormErrorMessage>
+              The login information is incorrect. Please try again.
+            </FormErrorMessage>
+          </FormControl>
+          <Button mt="15px" type="submit">
+            Login
+          </Button>
         </form>
-       
+
+        <Container color="black" mt="15px" p="0">
+          Forgot your password? <Link color="teal.500">Click here</Link>
+        </Container>
       </Container>
-      {/* <Webcam /> */}
     </Flex>
-  )
+  );
 }
 
-export default Login
+export default Login;

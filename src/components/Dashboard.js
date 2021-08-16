@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Flex, Heading, Spacer, Link, Button } from '@chakra-ui/react'
+import { Flex, Heading, Button } from '@chakra-ui/react'
 import { EVENTS, USER_DESCRIPTORS } from '../constants/constants'
 import EventList from './EventList'
 import { useLocation, useHistory, Link as RouterLink } from 'react-router-dom'
@@ -22,8 +22,8 @@ function Dashboard() {
   }
 
   return (
-    <Flex direction="column" justify="center" textAlign="center">
-      <Link as={RouterLink} to="/"><Button colorScheme="teal" m="5px" _hover={{color:"teal.500",bg:"white"}} onClick={handleLogout}>Logout</Button></Link>
+    <Flex direction="column" justify="center" align="center">
+      <Button variant="outline" as={RouterLink} to="/" onClick={handleLogout}>Logout</Button>
       <Heading>Dashboard</Heading>
       <EventList events={userEvents}/>
     </Flex>

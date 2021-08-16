@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import "../scss/main.scss";
 import { Flex, Box } from "@chakra-ui/react";
 import { USER_DESCRIPTORS } from "../constants/constants";
 

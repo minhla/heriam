@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid'
 
 function EventList({ events, userDescriptors }) {
   return (
-    <Flex direction="column" align="center" >
+    <Flex direction="row" align="center" justify="center" w="100%" flexWrap="wrap">
       {events.map((event) => {
         const eventId = uuid()
         return <Event key={eventId} eventData={event} userDescriptors={userDescriptors} />;
