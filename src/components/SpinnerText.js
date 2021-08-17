@@ -13,13 +13,17 @@ const SpinnerText = ({ scanningStatus }) => {
       loop: true,
       autoplay: true,
     });
-    return () => lottie.stop();
   }, []);
 
   return (
     <Flex direction="column" align="center">
       {scanningStatus ? (
-        <Box ref={avatar}></Box>
+        <Box
+          ref={avatar}
+          w="120px"
+          h="120px"
+          display={{ base: "none", md: "flex" }}
+        ></Box>
       ) : (
         <Spinner
           label="processing"
