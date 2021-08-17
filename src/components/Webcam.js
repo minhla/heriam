@@ -16,7 +16,7 @@ export default class Webcam extends Component {
   state = {
     isAuthenticated: false,
     isSubmitting: false,
-    isScanning: false,
+    isScanning: null,
     redirect: null,
   };
 
