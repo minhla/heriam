@@ -45,7 +45,7 @@ const Checkin = (props) => {
       <Heading size="md">{eventData.name} </Heading>{" "}
       Time: {eventData.time}
       <br />
-      <Webcam username={'anhminh'} eventData={eventData}/>
+      <Webcam username={'haixia'} eventData={eventData}/>
     </Flex>
   );
 };

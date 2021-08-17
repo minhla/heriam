@@ -56,7 +56,7 @@ export default class Webcam extends Component {
     const modelPath = "./weights/";
 
     let optionsSSDMobileNet, optionsTinyFaceDetector;
-    const userDescriptor = this.user[0].descriptor;
+    const userDescriptor = this.user[0].descriptor; //Edited to 1 to get Haixia's descriptors
 
     let descriptorArray = [];
     //Array manipulation to get the values only
@@ -65,7 +65,7 @@ export default class Webcam extends Component {
     }
     //User reference descriptors
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
-
+    console.log('Your information =>',this.user)
     const setupFaceApi = async () => {
       console.log("Setting up Face API...");
 
