@@ -4,7 +4,6 @@ import Container from "./components/Container"
 import Input from "./components/Input"
 import Text from "./components/Text"
 import Heading from "./components/Heading"
-import Box from "./components/Box"
 
 import globalStyles from "./global"
 
@@ -16,7 +15,6 @@ const componentOverrides = {
     Input,
     Text,
     Heading,
-    Box,
   },
 };
 

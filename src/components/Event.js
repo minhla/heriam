@@ -15,11 +15,12 @@ const Event = ({ eventData }) => {
       borderColor="teal.700"
       borderRadius="6px"
       textAlign="center"
+      bg="teal.800"
       _hover={{
-        textDecoration: "none",
-        transition: " transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
         color: "white",
-        bg: "teal.600",
+        textDecoration: "none",
+        bg: "teal.700",
+        borderColor: "gray"
       }}
     >
       <Heading variant="event">{eventData.name}</Heading>

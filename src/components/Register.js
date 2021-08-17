@@ -4,7 +4,6 @@ import {
   Flex,
   Link,
   Button,
-  ButtonGroup,
   Heading,
   FormControl,
   FormLabel,
@@ -12,7 +11,7 @@ import {
   Input,
   Container,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import { LOCAL_STORAGE_KEY } from "../constants/constants";
 
 const Register = () => {
@@ -58,34 +57,19 @@ const Register = () => {
 
   return (
     <Flex direction="column" justify="center" align="center">
-      <ButtonGroup mb="50px">
-        <Button
-          as={RouterLink}
-          to="/"
-          colorScheme="teal"
-          m="5px"
-          _hover={{ color: "teal.500", bg: "white" }}
-        >
-          Home
-        </Button>
-        <Button
-          as={RouterLink}
-          to="/login"
-          colorScheme="teal"
-          m="5px"
-          _hover={{ color: "teal.500", bg: "white" }}
-        >
-          Login
-        </Button>
-      </ButtonGroup>
-      <Heading mb="25px">Register a new account</Heading>
+      <Heading as="h1" m="30px 0" fontSize="45px">Heriam</Heading>
 
       <Container variant="auth">
+      <Flex justify="center" direction="column" align="center">
+      <Heading as="h2" p="0">Create your account</Heading>
+      <Text variant="auth" mb="20px">Take part in making events better</Text>
+      </Flex>
+
         <form onSubmit={handleSubmit}>
           <FormControl isRequired isInvalid={isError}>
             <FormLabel>Username</FormLabel>
             <Input
-              focusBorderColor="teal.100"
+              variant="auth"
               id="username"
               type="text"
               pattern="^[a-zA-Z0-9_.-]*$"
@@ -96,7 +80,7 @@ const Register = () => {
             </FormErrorMessage>
             <FormLabel mt="10px">Password</FormLabel>
             <Input
-              focusBorderColor="teal.100"
+              variant="auth"
               id="password"
               type="password"
               placeholder="Think of a very secure one"
@@ -108,12 +92,10 @@ const Register = () => {
           </Button>
         </form>
 
-        <Text>
-          Already have an account?{" "}
-          <Link as={RouterLink} to="/login" color="teal.500">
-            Log in
-          </Link>
-        </Text>
+        <Container color="black" mt="15px" p="0">
+          
+          <Text>Already have an account? <Link as={RouterLink} to="/login" color="teal.500">Sign in</Link></Text>
+        </Container>
       </Container>
     </Flex>
   );

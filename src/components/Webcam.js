@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Flex, Box } from "@chakra-ui/react";
+import { Flex, Box, Container, Spinner } from "@chakra-ui/react";
 import { USER_DESCRIPTORS } from "../constants/constants";
-
+import { Redirect } from "react-router";
 export default class Webcam extends Component {
   constructor(props) {
     super(props);
@@ -10,6 +10,12 @@ export default class Webcam extends Component {
     this.user = USER_DESCRIPTORS.filter(
       (element) => element.username === this.props.username
     );
+  }
+
+  state = {
+    isAuthenticated: false,
+    isSubmitting: false,
+    redirect: false,
   }
 
   timeout = 0;
@@ -24,7 +30,7 @@ export default class Webcam extends Component {
     for (var e in userDescriptor) {
       descriptorArray.push(userDescriptor[e]);
     }
-    //User reference 
+    //User reference
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
 
     const startWebcam = () => {
@@ -77,12 +83,8 @@ export default class Webcam extends Component {
 
     const videoClass = document.getElementById("webcam");
 
-    // Canvas draw function
+    // Face recognition
     videoClass.addEventListener("play", () => {
-      const canvas = faceapi.createCanvasFromMedia(videoClass);
-      const displaySize = { width: 640, height: 480 };
-      document.body.append(canvas);
-      faceapi.matchDimensions(canvas, displaySize);
       this.timeout = setInterval(async () => {
         const detections = await faceapi
           .detectSingleFace(videoClass, optionsSSDMobileNet)
@@ -95,16 +97,9 @@ export default class Webcam extends Component {
             faceMatcher.findBestMatch(tempFaceDescriptor);
           console.log(
             parseFloat(recognitionResult._distance) > 0.6
-              ? "Authenticated"
-              : "Denied"
+              ? this.setState({isAuthenticated: true})
+              : this.setState({isAuthenticated: false})
           );
-          console.log("recognitionResult =>",recognitionResult)
-          const resizedDetections = faceapi.resizeResults(
-            detections,
-            displaySize
-          );
-          canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-          faceapi.draw.drawDetections(canvas, resizedDetections);
         }
       }, 2000);
     });
@@ -120,7 +115,7 @@ export default class Webcam extends Component {
 
   render() {
     return (
-      <Flex justify="center">
+      <Flex justify="center" direction="column">
         <Box
           as="video"
           autoPlay={true}
@@ -130,6 +125,8 @@ export default class Webcam extends Component {
           id="webcam"
           muted
         />
+        <Spinner label="processing" color="teal.300" thickness="5px" size="xl" />
+        <Container><pre>{JSON.stringify(this.state,null,2)}</pre></Container>
       </Flex>
     );
   }

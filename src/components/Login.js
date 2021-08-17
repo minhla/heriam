@@ -77,7 +77,7 @@ function Login() {
 
         <Container color="black" mt="15px" p="0">
           
-          <Text>Forgot your password? <Link color="teal.500">Click here</Link></Text>
+          <Text>Don't have an account? <Link as={RouterLink} to="/register" color="teal.500">Sign up</Link></Text>
         </Container>
       </Container>
     </Flex>

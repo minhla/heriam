@@ -10,7 +10,6 @@ import Checkin from "./components/Checkin";
 import themeOverrides from "./styles/index"
 
 console.log(themeOverrides)
-
 const customTheme = extendTheme(themeOverrides);
 
 ReactDOM.render(

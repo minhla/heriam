@@ -5,7 +5,6 @@ import {
   Button,
   ButtonGroup,
   Image,
-  Container,
 } from "@chakra-ui/react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 
