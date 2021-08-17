@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Flex, Box, Container, Spinner } from "@chakra-ui/react";
+import { Flex, Box, Spinner, Text } from "@chakra-ui/react";
 import { USER_DESCRIPTORS } from "../constants/constants";
 import { Redirect } from "react-router";
+import SpinnerText from "./SpinnerText";
 export default class Webcam extends Component {
   constructor(props) {
     super(props);
@@ -15,13 +16,29 @@ export default class Webcam extends Component {
   state = {
     isAuthenticated: false,
     isSubmitting: false,
-    redirect: false,
-  }
+    redirect: null,
+  };
 
   timeout = 0;
 
   componentDidMount() {
+    this._isMounted = true;
+    
+    const successHandle = () => {
+      this.setState({ isAuthenticated: true, isSubmitting: true })
+
+      setTimeout(
+        function () {
+          if (this._isMounted) {
+            this.setState({ redirect: true });
+          }
+        }.bind(this),
+        3000
+      );
+    };
+
     const video = this.videoRef.current;
+
     let optionsSSDMobileNet;
     const userDescriptor = this.user[0].descriptor;
 
@@ -30,7 +47,7 @@ export default class Webcam extends Component {
     for (var e in userDescriptor) {
       descriptorArray.push(userDescriptor[e]);
     }
-    //User reference
+    //User reference descriptors
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
 
     const startWebcam = () => {
@@ -97,16 +114,18 @@ export default class Webcam extends Component {
             faceMatcher.findBestMatch(tempFaceDescriptor);
           console.log(
             parseFloat(recognitionResult._distance) > 0.6
-              ? this.setState({isAuthenticated: true})
-              : this.setState({isAuthenticated: false})
+              ? successHandle() : this.setState({ isAuthenticated: false, isSubmitting: false })
           );
+        } else {
+          this.setState({ isAuthenticated: false });
         }
       }, 2000);
     });
   }
 
   componentWillUnmount() {
-    //Stops camera stream when component unmounts
+    this._isMounted = false;
+    //Stops webcam stream when component unmounts
     if (this.webcamStream != null) {
       this.webcamStream.getTracks().forEach((track) => track.stop());
     }
@@ -114,6 +133,10 @@ export default class Webcam extends Component {
   }
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={{ pathname: "/dashboard" }} />;
+    }
+
     return (
       <Flex justify="center" direction="column">
         <Box
@@ -125,8 +148,11 @@ export default class Webcam extends Component {
           id="webcam"
           muted
         />
-        <Spinner label="processing" color="teal.300" thickness="5px" size="xl" />
-        <Container><pre>{JSON.stringify(this.state,null,2)}</pre></Container>
+        {this.state.isSubmitting && (
+          <SpinnerText text={"Authenticated successfully. Redirecting..."} />
+        )}
+
+        <pre>{JSON.stringify(this.state, null, 2)}</pre>
       </Flex>
     );
   }
