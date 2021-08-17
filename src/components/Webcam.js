@@ -16,6 +16,7 @@ export default class Webcam extends Component {
   state = {
     isAuthenticated: false,
     isSubmitting: false,
+    isScanning: false,
     redirect: null,
   };
 
@@ -23,9 +24,13 @@ export default class Webcam extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    
+
     const successHandle = () => {
-      this.setState({ isAuthenticated: true, isSubmitting: true })
+      this.setState({
+        isAuthenticated: true,
+        isSubmitting: true,
+        isScanning: false,
+      });
 
       setTimeout(
         function () {
@@ -33,13 +38,24 @@ export default class Webcam extends Component {
             this.setState({ redirect: true });
           }
         }.bind(this),
-        3000
+        3500
       );
+    };
+
+    const failureHandle = () => {
+      this.setState({
+        isAuthenticated: false,
+        isSubmitting: false,
+        isScanning: true,
+      });
     };
 
     const video = this.videoRef.current;
 
-    let optionsSSDMobileNet;
+    const faceapi = require("@vladmandic/face-api");
+    const modelPath = "./weights/";
+
+    let optionsSSDMobileNet, optionsTinyFaceDetector;
     const userDescriptor = this.user[0].descriptor;
 
     let descriptorArray = [];
@@ -49,13 +65,6 @@ export default class Webcam extends Component {
     }
     //User reference descriptors
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
-
-    const startWebcam = () => {
-      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-        this.webcamStream = stream;
-        video.srcObject = stream;
-      });
-    };
 
     const setupFaceApi = async () => {
       console.log("Setting up Face API...");
@@ -67,24 +76,33 @@ export default class Webcam extends Component {
       await faceapi.tf.ENV.set("DEBUG", false);
       await faceapi.tf.ready();
 
-      await faceapi.nets.ssdMobilenetv1.loadFromUri(modelPath);
+      await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
       await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
       await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
 
       console.log(faceapi.nets);
 
-      optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
-        minConfidence: minScore,
-        maxResults,
+      // optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
+      //   minConfidence: minScore,
+      //   maxResults,
+      // });
+      if (this._isMounted) {
+        this.setState({ isScanning: true });
+      }
+      optionsTinyFaceDetector = new faceapi.TinyFaceDetectorOptions({
+        inputSize: 416,
+        scoreThreshold: 0.6,
       });
     };
 
-    const faceapi = require("@vladmandic/face-api");
-    const modelPath = "./weights/";
-    const minScore = 0.1;
-    const maxResults = 5;
+    const startWebcam = () => {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        this.webcamStream = stream;
+        video.srcObject = stream;
+      });
+    };
 
-    Promise.all([setupFaceApi()]).then(startWebcam);
+    Promise.all([setupFaceApi()]).then(startWebcam());
 
     const labeledDescriptors = [
       new faceapi.LabeledFaceDescriptors(`${this.user.username}`, [
@@ -92,10 +110,10 @@ export default class Webcam extends Component {
       ]),
     ];
 
-    console.log(
-      "User descriptors stored in database => ",
-      labeledDescriptors[0]
-    );
+    // console.log(
+    //   "User descriptors stored in database => ",
+    //   labeledDescriptors[0]
+    // );
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
 
     const videoClass = document.getElementById("webcam");
@@ -103,23 +121,26 @@ export default class Webcam extends Component {
     // Face recognition
     videoClass.addEventListener("play", () => {
       this.timeout = setInterval(async () => {
-        const detections = await faceapi
-          .detectSingleFace(videoClass, optionsSSDMobileNet)
-          .withFaceLandmarks()
-          .withFaceDescriptor();
-        if (detections) {
-          const tempFaceDescriptor = detections.descriptor;
-          console.log("Scanned face descriptor => ", tempFaceDescriptor);
-          const recognitionResult =
-            faceMatcher.findBestMatch(tempFaceDescriptor);
-          console.log(
-            parseFloat(recognitionResult._distance) > 0.6
-              ? successHandle() : this.setState({ isAuthenticated: false, isSubmitting: false })
-          );
-        } else {
-          this.setState({ isAuthenticated: false });
+        while (this.state.isScanning) {
+          const detections = await faceapi
+            .detectSingleFace(videoClass, optionsTinyFaceDetector)
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+          if (detections) {
+            const tempFaceDescriptor = detections.descriptor;
+            console.log("Scanned face descriptor => ", tempFaceDescriptor);
+            const recognitionResult =
+              faceMatcher.findBestMatch(tempFaceDescriptor);
+            console.log(
+              parseFloat(recognitionResult._distance) > 0.6
+                ? successHandle()
+                : failureHandle()
+            );
+          } else {
+            failureHandle();
+          }
         }
-      }, 2000);
+      }, 2500);
     });
   }
 
@@ -148,10 +169,10 @@ export default class Webcam extends Component {
           id="webcam"
           muted
         />
-        {this.state.isSubmitting && (
-          <SpinnerText text={"Authenticated successfully. Redirecting..."} />
-        )}
-
+        <SpinnerText
+          scanningStatus={this.state.isScanning}
+          text={"Scanning for your face. Please look directly at the webcam"}
+        />
         <pre>{JSON.stringify(this.state, null, 2)}</pre>
       </Flex>
     );

@@ -1,12 +1,41 @@
-import React from "react";
-import { Spinner, Flex, Text } from "@chakra-ui/react";
-function SpinnerText({text}) {
+import React, { useEffect, useRef } from "react";
+import { Spinner, Flex, Text, Box } from "@chakra-ui/react";
+import lottie from "lottie-web/build/player/lottie_light";
+import animationData from "../lotties/loading.json";
+
+const SpinnerText = ({ scanningStatus }) => {
+  const avatar = useRef(null);
+
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: avatar.current,
+      animationData: animationData,
+      loop: true,
+      autoplay: true,
+    });
+    return () => lottie.stop();
+  }, []);
+
   return (
     <Flex direction="column" align="center">
-      <Spinner label="processing" color="teal.100" thickness="5px" speed="1s" size="xl" />
-      <Text>{text}</Text>
+      {scanningStatus ? (
+        <Box ref={avatar}></Box>
+      ) : (
+        <Spinner
+          label="processing"
+          color="teal.200"
+          thickness="5px"
+          speed="1s"
+          size="xl"
+        />
+      )}
+      <Text>
+        {scanningStatus
+          ? "Scanning for your face. Please look directly at the webcam"
+          : "Authenticated successfully. Redirecting..."}
+      </Text>
     </Flex>
   );
-}
+};
 
 export default SpinnerText;

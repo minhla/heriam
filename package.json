@@ -12,6 +12,7 @@
     "@vladmandic/face-api": "^0.30.2",
     "bcryptjs": "^2.4.3",
     "framer-motion": "^3.6.2",
+    "lottie-web": "^5.7.13",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
