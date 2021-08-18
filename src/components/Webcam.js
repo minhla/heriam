@@ -16,7 +16,8 @@ export default class Webcam extends Component {
   state = {
     isAuthenticated: false,
     isSubmitting: false,
-    isScanning: null,
+    isScanning: false,
+    isSettingUp: true,
     redirect: null,
   };
 
@@ -28,6 +29,7 @@ export default class Webcam extends Component {
     const successHandle = () => {
       this.setState({
         isAuthenticated: true,
+        isSettingUp: false,
         isSubmitting: true,
         isScanning: false,
       });
@@ -50,13 +52,22 @@ export default class Webcam extends Component {
       });
     };
 
+    const readyHandle = () => {
+      this.setState({
+        isAuthenticated: false,
+        isScanning: true,
+        isSubmitting: false,
+        isSettingUp: false,
+      });
+    };
+
     const video = this.videoRef.current;
 
     const faceapi = require("@vladmandic/face-api");
     const modelPath = "./weights/";
 
     let optionsSSDMobileNet, optionsTinyFaceDetector;
-    const userDescriptor = this.user[0].descriptor; //Edited to 1 to get Haixia's descriptors
+    const userDescriptor = this.user[0].descriptor;
 
     let descriptorArray = [];
     //Array manipulation to get the values only
@@ -65,8 +76,9 @@ export default class Webcam extends Component {
     }
     //User reference descriptors
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
-    console.log('Your information =>',this.user)
-    const setupFaceApi = async () => {
+    console.log("Your descriptor =>", descriptorArrayFloat32);
+
+    const setupFaceAPI = async () => {
       console.log("Setting up Face API...");
 
       //default is webgl backend
@@ -86,9 +98,6 @@ export default class Webcam extends Component {
       //   minConfidence: minScore,
       //   maxResults,
       // });
-      if (this._isMounted) {
-        this.setState({ isScanning: true });
-      }
       optionsTinyFaceDetector = new faceapi.TinyFaceDetectorOptions({
         inputSize: 416,
         scoreThreshold: 0.6,
@@ -100,9 +109,13 @@ export default class Webcam extends Component {
         this.webcamStream = stream;
         video.srcObject = stream;
       });
+
+      if (this._isMounted) {
+        readyHandle();
+      }
     };
 
-    Promise.all([setupFaceApi()]).then(startWebcam());
+    Promise.all([setupFaceAPI()]).then(startWebcam());
 
     const labeledDescriptors = [
       new faceapi.LabeledFaceDescriptors(`${this.user.username}`, [
@@ -171,6 +184,8 @@ export default class Webcam extends Component {
         />
         <SpinnerText
           scanningStatus={this.state.isScanning}
+          settingUpStatus={this.state.isSettingUp}
+          submitStatus={this.state.isSubmitting}
           text={"Scanning for your face. Please look directly at the webcam"}
         />
         <pre>{JSON.stringify(this.state, null, 2)}</pre>
