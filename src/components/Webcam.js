@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Flex, Box, Spinner, Text } from "@chakra-ui/react";
-import { USER_DESCRIPTORS } from "../constants/constants";
+import { LOCAL_STORAGE_KEY } from "../constants/constants";
 import { Redirect } from "react-router";
 import SpinnerText from "./SpinnerText";
 export default class Webcam extends Component {
@@ -8,20 +8,109 @@ export default class Webcam extends Component {
     super(props);
     this.videoRef = React.createRef();
     this.webcamStream = null;
-    this.user = USER_DESCRIPTORS.filter(
-      (element) => element.username === this.props.username
-    );
+    this.userbase = JSON.parse(localStorage.getItem("heriam.users"));
+    this.userToken = localStorage.getItem("heriam.userToken");
+    this.user = this.userbase.find((e) => e.username === this.userToken);
   }
 
+  readyHandle = () => {
+    this.setState({
+      isAuthenticated: false,
+      isScanning: true,
+      isSubmitting: false,
+      isSettingUp: false,
+    });
+  };
+
+  successHandle = () => {
+    this.setState({
+      isAuthenticated: true,
+      isSettingUp: false,
+      isSubmitting: true,
+      isScanning: false,
+    });
+  };
+
+  failureHandle = () => {
+    this.setState({
+      isAuthenticated: false,
+      isSubmitting: false,
+      isScanning: true,
+    });
+  };
+
+  faceapi = require("@vladmandic/face-api");
+  modelPath = "./weights/";
+  optionsTinyFaceDetector;
+  referenceFaceDescriptor;
+
   state = {
-    isAuthenticated: false,
-    isSubmitting: false,
-    isScanning: false,
     isSettingUp: true,
+    isScanning: false,
+    isAuthenticated: false,
+    isProcessing: false,
+    isSubmitting: false,
     redirect: null,
   };
 
-  timeout = 0;
+  setupFaceAPI = async () => {
+    console.log("Setting up Face API...");
+
+    //default is webgl backend
+    await this.faceapi.tf.setBackend("webgl");
+
+    await this.faceapi.tf.enableProdMode();
+    await this.faceapi.tf.ENV.set("DEBUG", false);
+    await this.faceapi.tf.ready();
+
+    await this.faceapi.nets.ssdMobilenetv1.loadFromUri(this.modelPath);
+    await this.faceapi.nets.tinyFaceDetector.loadFromUri(this.modelPath);
+    await this.faceapi.nets.faceLandmark68Net.loadFromUri(this.modelPath);
+    await this.faceapi.nets.faceRecognitionNet.loadFromUri(this.modelPath);
+
+    console.log(this.faceapi.nets);
+  };
+
+  startWebcam = () => {
+    if (this._isMounted) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        this.webcamStream = stream;
+        this.videoRef.current.srcObject = stream;
+      });
+
+      this.readyHandle();
+    }
+  };
+
+  recognizeFace = () => {
+    setInterval(async () => {
+      while (this.state.isScanning && !this.state.isProcessing) {
+        const detections = await this.faceapi
+          .detectSingleFace(
+            this.videoRef.current,
+            new this.faceapi.TinyFaceDetectorOptions({})
+          )
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+        if (detections) {
+          this.setState({ isProcessing: true });
+          const tempFaceDescriptor = detections.descriptor;
+          console.log("Scanned face descriptor => ", tempFaceDescriptor);
+          const recognitionResult =
+            this.faceMatcher.findBestMatch(tempFaceDescriptor);
+          console.log(
+            parseFloat(recognitionResult._distance) > 0.6
+              ? this.successHandle()
+              : this.failureHandle()
+          );
+          this.setState({ isProcessing: false });
+        } else {
+          this.failureHandle();
+          this.setState({ isProcessing: false });
+        }
+      }
+    }, 2500);
+  };
 
   componentDidMount() {
     this._isMounted = true;
@@ -66,8 +155,10 @@ export default class Webcam extends Component {
     const faceapi = require("@vladmandic/face-api");
     const modelPath = "./weights/";
 
-    let optionsSSDMobileNet, optionsTinyFaceDetector;
-    const userDescriptor = this.user[0].descriptor;
+    let optionsTinyFaceDetector;
+
+    const userDescriptor = this.user.descriptor;
+    console.log("Passed in userDescriptor =>", userDescriptor);
 
     let descriptorArray = [];
     //Array manipulation to get the values only
@@ -78,62 +169,19 @@ export default class Webcam extends Component {
     const descriptorArrayFloat32 = new Float32Array(descriptorArray);
     console.log("Your descriptor =>", descriptorArrayFloat32);
 
-    const setupFaceAPI = async () => {
-      console.log("Setting up Face API...");
-
-      //default is webgl backend
-      await faceapi.tf.setBackend("webgl");
-
-      await faceapi.tf.enableProdMode();
-      await faceapi.tf.ENV.set("DEBUG", false);
-      await faceapi.tf.ready();
-
-      await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
-
-      console.log(faceapi.nets);
-
-      // optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
-      //   minConfidence: minScore,
-      //   maxResults,
-      // });
-      optionsTinyFaceDetector = new faceapi.TinyFaceDetectorOptions({
-        inputSize: 416,
-        scoreThreshold: 0.6,
-      });
-    };
-
-    const startWebcam = () => {
-      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-        this.webcamStream = stream;
-        video.srcObject = stream;
-      });
-
-      if (this._isMounted) {
-        readyHandle();
-      }
-    };
-
-    Promise.all([setupFaceAPI()]).then(startWebcam());
+    Promise.all([this.setupFaceAPI()]).then(this.startWebcam());
 
     const labeledDescriptors = [
-      new faceapi.LabeledFaceDescriptors(`${this.user.username}`, [
-        descriptorArrayFloat32,
-      ]),
+      new faceapi.LabeledFaceDescriptors("Reference", [descriptorArrayFloat32]),
     ];
 
-    // console.log(
-    //   "User descriptors stored in database => ",
-    //   labeledDescriptors[0]
-    // );
     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors);
 
-    const videoClass = document.getElementById("webcam");
+    const videoClass = this.videoRef.current;
 
     // Face recognition
     videoClass.addEventListener("play", () => {
-      this.timeout = setInterval(async () => {
+      setInterval(async () => {
         while (this.state.isScanning) {
           const detections = await faceapi
             .detectSingleFace(videoClass, optionsTinyFaceDetector)
