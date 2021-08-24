@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Webcam from "./Webcam";
 import {
   Flex,
   Link,
@@ -43,18 +44,14 @@ function Login() {
 
   return (
     <Flex direction="column" justify="center" align="center">
-      <Heading as="h1" m="30px 0" fontSize="45px">
-        Heriam
-      </Heading>
+      <Heading as="h1" m="30px 0" fontSize="45px">Heriam</Heading>
 
       <Container variant="auth">
         <Flex justify="center" direction="column" align="center">
           <Heading as="h2" p="0">
             Welcome back
           </Heading>
-          <Text variant="auth" mb="20px">
-            Enter your credentials to access your account
-          </Text>
+          <Text variant="auth" mb="20px">Enter your credentials to access your account</Text>
         </Flex>
 
         <form onSubmit={handleSubmit}>
@@ -79,12 +76,8 @@ function Login() {
         </form>
 
         <Container color="black" mt="15px" p="0">
-          <Text>
-            Don't have an account?{" "}
-            <Link as={RouterLink} to="/register" color="teal.500">
-              Sign up
-            </Link>
-          </Text>
+          
+          <Text>Don't have an account? <Link as={RouterLink} to="/register" color="teal.500">Sign up</Link></Text>
         </Container>
       </Container>
     </Flex>

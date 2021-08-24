@@ -72,13 +72,6 @@ export const EVENTS = [
   },
 ];
 
-export const authenText = "Authenticated successfully. Redirecting...";
-export const scanningText =
-  "Scanning for your face. Please look directly at the webcam";
-export const waitingText = "Setting everything up, please wait...";
-export const registerFaceText = "Please look directly at the camera to register your face. It is recommended to have a bright surrounding in order to achieve the best result."
-export const doneDetected = "The registration process is done. Please click Register to finish creating your account."
-
 export const USER_DESCRIPTORS = [
   {
     username: "anhminh",

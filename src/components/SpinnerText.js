@@ -1,16 +1,15 @@
 import React, { useEffect, useRef } from "react";
-import { Box, Spinner, Flex, Text } from "@chakra-ui/react";
+import { Spinner, Flex, Text } from "@chakra-ui/react";
 import lottie from "lottie-web/build/player/lottie_light";
-import animationData from "../lotties/loading.json";
+import animationData from "../lotties/man.json";
 
-const SpinnerText = ({ text }) => {
+const SpinnerText = ({ scanningStatus, settingUpStatus, submitStatus }) => {
   const avatar = useRef(null);
-  const animationClone = JSON.stringify(animationData);
 
   useEffect(() => {
     lottie.loadAnimation({
       container: avatar.current,
-      animationData: JSON.parse(animationClone),
+      animationData: animationData,
       loop: true,
       autoplay: true,
     });
@@ -18,8 +17,19 @@ const SpinnerText = ({ text }) => {
 
   return (
     <Flex direction="column" align="center">
-      <Box w="120px" ref={avatar} />
-      <Text>{text}</Text>
+      <Spinner
+        label="processing"
+        color="teal.200"
+        thickness="5px"
+        speed="1s"
+        size="xl"
+      />
+      <Text>
+        {settingUpStatus && "Setting everything up..."}
+        {scanningStatus &&
+          "Scanning for your face. Please look directly at the webcam"}
+        {submitStatus && "Authenticated successfully. Redirecting..."}
+      </Text>
     </Flex>
   );
 };

@@ -17,6 +17,7 @@ export default class Homepage extends Component {
   componentDidMount() {
     const userToken = localStorage.getItem("heriam.userToken");
     if (userToken) {
+      console.log(userToken);
       this.setState({ redirect: "/dashboard", userToken: userToken });
     }
 
