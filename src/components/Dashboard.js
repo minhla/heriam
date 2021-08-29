@@ -11,7 +11,7 @@ function Dashboard() {
   useEffect(() => {
     const userToken = localStorage.getItem("heriam.userToken");
     if (!userToken) history.push("/")
-    const tempUserEvents = EVENTS.filter(event => event.username === "anhminh")
+    const tempUserEvents = EVENTS.filter(event => event.username === "anhminh") //Will be updated to be dynamic
     setUserEvents(tempUserEvents)
   },[])
 
